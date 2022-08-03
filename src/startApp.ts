@@ -11,6 +11,8 @@ export const startApp = () => {
     app.use(bodyParser.json())
     app.use(cors())
 
+    app.use(require('./controllers/routes'))
+
     app.use(errorHandler)
 
     app.listen(port, '0.0.0.0', () => {
