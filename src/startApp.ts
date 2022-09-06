@@ -3,10 +3,9 @@ import cors from 'cors'
 import express from 'express'
 import { errorHandler } from './middleware/errorHandler'
 
-const port = 7072
-
 export const startApp = () => {
     const app = express()
+    const port = 7072
 
     app.use(bodyParser.json())
     app.use(cors())

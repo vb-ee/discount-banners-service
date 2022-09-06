@@ -5,4 +5,4 @@ initConnection('mongodb://banners-service-db/bannersdb')
     .then(() => {
         startApp()
     })
-    .catch((err) => console.log(err.message))
+    .catch((err) => console.log(err))
