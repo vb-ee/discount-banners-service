@@ -29,7 +29,7 @@ export const getBannerById = asyncWrapper(
         if (!banner)
             return res
                 .status(404)
-                .send({ msg: `Banner with id ${bannerId} not found` })
+                .send({ errors: `Banner with id ${bannerId} not found` })
 
         res.status(200).json({ banner })
     }
@@ -44,7 +44,7 @@ export const updateBannerById = asyncWrapper(
         if (!banner)
             return res
                 .status(404)
-                .send({ msg: `Banner with id ${bannerId} not found` })
+                .send({ errors: `Banner with id ${bannerId} not found` })
 
         banner.removeImage()
         const imageUrl = `${req.file?.destination}/${req.file?.originalname}`
@@ -64,7 +64,7 @@ export const deleteBannerById = asyncWrapper(
         if (!banner)
             return res
                 .status(404)
-                .send({ msg: `Banner with id ${bannerId} not found` })
+                .send({ errors: `Banner with id ${bannerId} not found` })
 
         banner.removeImage()
         await banner.delete()

@@ -7,8 +7,9 @@ export const startApp = () => {
     const app = express()
     const port = 7072
 
-    app.use(bodyParser.json())
     app.use(cors())
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
 
     app.use(require('./controllers/routes'))
 
