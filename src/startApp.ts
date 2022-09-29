@@ -5,7 +5,7 @@ import { errorHandler } from './middleware/errorHandler'
 
 export const startApp = () => {
     const app = express()
-    const port = 7072
+    const port = 8080
 
     app.use(cors())
     app.use(bodyParser.json())

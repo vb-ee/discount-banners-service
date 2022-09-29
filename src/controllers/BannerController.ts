@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { asyncWrapper } from '../middleware'
-import { Banner } from '../models/Banner'
+import { Banner, IBanner } from '../models/Banner'
 import { renameImagePath } from '../utils/renameImagePath'
 
 export const getBanners = asyncWrapper(async (req: Request, res: Response) => {
@@ -12,7 +12,12 @@ export const createBanner = asyncWrapper(
     async (req: Request, res: Response) => {
         const { title } = req.body
 
-        const imageUrl = `${req.file?.destination}/${req.file?.originalname}`
+        if (!req.file)
+            return res
+                .status(400)
+                .send({ errors: 'image file has to be defined in req' })
+
+        const imageUrl = `${req.file.destination}/${req.file.originalname}`
         renameImagePath(<string>req.file?.path, imageUrl)
 
         const banner = await Banner.create({ title, imageUrl })
@@ -39,18 +44,23 @@ export const updateBannerById = asyncWrapper(
     async (req: Request, res: Response) => {
         const { bannerId } = req.params
         const { title } = req.body
+        let imageUrl: string
+        let bannerUpdateBody: IBanner
 
-        const banner = await Banner.findById(bannerId)
+        let banner = await Banner.findById(bannerId)
         if (!banner)
             return res
                 .status(404)
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
-        banner.removeImage()
-        const imageUrl = `${req.file?.destination}/${req.file?.originalname}`
-        renameImagePath(<string>req.file?.path, imageUrl)
+        if (req.file) {
+            banner.removeImage()
+            imageUrl = `${req.file.destination}/${req.file.originalname}`
+            renameImagePath(<string>req.file.path, imageUrl)
+            bannerUpdateBody = { title, imageUrl }
+        } else bannerUpdateBody = { title }
 
-        await banner.update({ title, imageUrl })
+        banner = await banner.update(bannerUpdateBody)
 
         res.status(201).json({ banner })
     }
