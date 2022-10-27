@@ -1,7 +1,5 @@
 import { Schema, model, Model } from 'mongoose'
-import fs from 'fs'
-import { title } from 'process'
-import { renameImagePath } from '../utils/renameImagePath'
+import { unlink } from 'fs'
 // Create an interface representing a document in MongoDB.
 export interface IBanner {
     title: string
@@ -21,7 +19,7 @@ export const bannerSchema = new Schema<IBanner, BannerModel, IBannerMethods>({
 })
 
 bannerSchema.methods.removeImage = function () {
-    fs.unlink(this.imageUrl, (err) => {
+    unlink(`${process.env.PWD}/images/${this.imageUrl}`, (err) => {
         if (err) throw err
     })
 }

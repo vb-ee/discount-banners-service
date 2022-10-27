@@ -17,8 +17,11 @@ export const createBanner = asyncWrapper(
                 .status(400)
                 .send({ errors: 'image file has to be defined in req' })
 
-        const imageUrl = `${req.file.destination}/${req.file.originalname}`
-        renameImagePath(<string>req.file?.path, imageUrl)
+        const imageUrl = req.file.originalname
+        renameImagePath(
+            <string>req.file.path,
+            `${req.file.destination}/${imageUrl}`
+        )
 
         const banner = await Banner.create({ title, imageUrl })
 
@@ -44,7 +47,6 @@ export const updateBannerById = asyncWrapper(
     async (req: Request, res: Response) => {
         const { bannerId } = req.params
         const { title } = req.body
-        let imageUrl: string
         let bannerUpdateBody: IBanner
 
         let banner = await Banner.findById(bannerId)
@@ -54,9 +56,12 @@ export const updateBannerById = asyncWrapper(
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
         if (req.file) {
+            const imageUrl = req.file.originalname
             banner.removeImage()
-            imageUrl = `${req.file.destination}/${req.file.originalname}`
-            renameImagePath(<string>req.file.path, imageUrl)
+            renameImagePath(
+                <string>req.file.path,
+                `${req.file.destination}/${imageUrl}`
+            )
             bannerUpdateBody = { title, imageUrl }
         } else bannerUpdateBody = { title }
 
