@@ -75,15 +75,13 @@ export const deleteBannerById = asyncWrapper(
     async (req: Request, res: Response) => {
         const { bannerId } = req.params
 
-        const banner = await Banner.findById(bannerId)
+        const banner = await Banner.findByIdAndDelete(bannerId)
         if (!banner)
             return res
                 .status(404)
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
         banner.removeImage()
-        await banner.delete()
-
         res.status(204).end()
     }
 )
