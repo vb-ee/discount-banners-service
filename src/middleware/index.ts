@@ -1,3 +1,4 @@
+export { verifyToken, IJwtPayload } from './verifyToken'
 export { asyncWrapper } from './asyncWrapper'
 export { errorHandler } from './errorHandler'
 export { uploadImage } from './uploadImage'

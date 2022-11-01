@@ -2,6 +2,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
 import { errorHandler } from './middleware/errorHandler'
+import { verifyToken } from './middleware/verifyToken'
 
 export const startApp = () => {
     const app = express()
@@ -12,6 +13,7 @@ export const startApp = () => {
     app.use(bodyParser.urlencoded({ extended: true }))
     app.use('/banner-images', express.static('images'))
 
+    app.use(verifyToken())
     app.use(require('./controllers/routes'))
 
     app.use(errorHandler)
