@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { asyncWrapper } from '../middleware'
 import { Banner, IBanner } from '../models/Banner'
-import { renameImagePath } from '../utils/renameImagePath'
+import { generateImageUrl } from '../utils/generateImageUrl'
 
 export const getBanners = asyncWrapper(async (req: Request, res: Response) => {
     const banners = await Banner.find()
@@ -11,17 +11,14 @@ export const getBanners = asyncWrapper(async (req: Request, res: Response) => {
 export const createBanner = asyncWrapper(
     async (req: Request, res: Response) => {
         const { title } = req.body
-
-        if (!req.file)
+        const { file } = req
+        console.log(file)
+        if (!file)
             return res
                 .status(400)
                 .send({ errors: 'image file has to be defined in req' })
 
-        const imageUrl = req.file.originalname
-        renameImagePath(
-            <string>req.file.path,
-            `${req.file.destination}/${imageUrl}`
-        )
+        const imageUrl = generateImageUrl(file.filename)
 
         const banner = await Banner.create({ title, imageUrl })
 
@@ -47,6 +44,7 @@ export const updateBannerById = asyncWrapper(
     async (req: Request, res: Response) => {
         const { bannerId } = req.params
         const { title } = req.body
+        const { file } = req
         let bannerUpdateBody: IBanner
 
         let banner = await Banner.findById(bannerId)
@@ -55,13 +53,8 @@ export const updateBannerById = asyncWrapper(
                 .status(404)
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
-        if (req.file) {
-            const imageUrl = req.file.originalname
-            banner.removeImage()
-            renameImagePath(
-                <string>req.file.path,
-                `${req.file.destination}/${imageUrl}`
-            )
+        if (file) {
+            const imageUrl = generateImageUrl(file.filename)
             bannerUpdateBody = { title, imageUrl }
         } else bannerUpdateBody = { title }
 
@@ -81,7 +74,6 @@ export const deleteBannerById = asyncWrapper(
                 .status(404)
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
-        banner.removeImage()
         res.status(204).end()
     }
 )
