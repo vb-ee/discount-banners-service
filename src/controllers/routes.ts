@@ -1,5 +1,10 @@
 import express from 'express'
-import { bodyValidator, restrictToAdmin, uploadImage } from '../middleware'
+import {
+    postValidator,
+    putValidator,
+    restrictToAdmin,
+    uploadImage
+} from '../middleware'
 import {
     deleteBannerById,
     createBanner,
@@ -16,7 +21,7 @@ router
     .post(
         restrictToAdmin(),
         uploadImage.single('banner'),
-        bodyValidator(['title']),
+        postValidator(['title']),
         createBanner
     )
 router
@@ -25,7 +30,7 @@ router
     .put(
         restrictToAdmin(),
         uploadImage.single('banner'),
-        bodyValidator(['title']),
+        putValidator(),
         updateBannerById
     )
     .delete(restrictToAdmin(), deleteBannerById)

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 
-export const bodyValidator = (keys: string[]) => {
+export const postValidator = (keys: string[]) => {
     return function (req: Request, res: Response, next: NextFunction) {
         if (!req.body || !req.file)
             return res.status(422).send({ errors: 'Invalid request' })
@@ -12,6 +12,14 @@ export const bodyValidator = (keys: string[]) => {
                     .send({ errors: `${key} has to be defined` })
         })
 
+        next()
+    }
+}
+
+export const putValidator = () => {
+    return function (req: Request, res: Response, next: NextFunction) {
+        if (!req.body && !req.file && req.method == 'PUT')
+            return res.status(422).send({ errors: 'Invalid request' })
         next()
     }
 }

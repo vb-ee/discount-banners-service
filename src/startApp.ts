@@ -11,7 +11,6 @@ export const startApp = () => {
     app.use(cors())
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: true }))
-    app.use('/banner-images', express.static('images'))
 
     app.use(verifyToken())
     app.use(require('./controllers/routes'))
