@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { asyncWrapper } from '../middleware'
 import { Banner, IBanner } from '../models/Banner'
-import { generateImageUrl, messageBroker } from '../utils'
+import { generateImageUrl, messageBroker } from '@payhasly-discount/common'
 
 export const getBanners = asyncWrapper(async (req: Request, res: Response) => {
     const banners = await Banner.find()
@@ -18,7 +18,7 @@ export const createBanner = asyncWrapper(
                 .status(400)
                 .send({ errors: 'image file has to be defined in req' })
 
-        const imageUrl = generateImageUrl(file.filename)
+        const imageUrl = generateImageUrl('API_GATEWAY_URL', file.filename)
         const banner = await Banner.create({ title, imageUrl })
 
         res.status(201).json({ banner })
@@ -53,14 +53,15 @@ export const updateBannerById = asyncWrapper(
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
         if (file) {
-            await messageBroker(banner.imageUrl, 'deleteImage')
-            const imageUrl = generateImageUrl(file.filename)
-            bannerUpdateBody = { title: banner.title, imageUrl }
+            await messageBroker('AMQP_URL', banner.imageUrl, 'deleteImage')
+            const imageUrl = generateImageUrl('API_GATEWAY_URL', file.filename)
+            if (title) bannerUpdateBody = { title, imageUrl }
+            else bannerUpdateBody = { title: banner.title, imageUrl }
         } else bannerUpdateBody = { title, imageUrl: banner.imageUrl }
 
-        banner = await banner.updateOne(bannerUpdateBody)
+        await banner.updateOne(bannerUpdateBody)
 
-        res.status(201).json({ banner })
+        res.status(201).json({ id: banner._id, ...bannerUpdateBody })
     }
 )
 
@@ -74,7 +75,7 @@ export const deleteBannerById = asyncWrapper(
                 .status(404)
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
-        await messageBroker(banner.imageUrl, 'deleteImage')
+        await messageBroker('AMQP_URL', banner.imageUrl, 'deleteImage')
         await banner.delete()
 
         res.status(204).end()

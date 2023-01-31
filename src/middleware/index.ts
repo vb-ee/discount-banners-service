@@ -1,7 +1,5 @@
-export { verifyToken, IJwtPayload } from './verifyToken'
 export { asyncWrapper } from './asyncWrapper'
 export { errorHandler } from './errorHandler'
-export { uploadImage } from './uploadImage'
 export { postValidator } from './bodyValidator'
 export { putValidator } from './bodyValidator'
-export { restrictToAdmin } from './restrictToAdmin'
+export { uploadImage } from './uploadImage'
