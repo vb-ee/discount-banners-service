@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { asyncWrapper } from '../middleware'
 import { Banner, IBanner } from '../models/Banner'
-import { generateImageUrl, messageBroker } from '@payhasly-discount/common'
+import { generateImageUrl, sendMessage } from '@payhasly-discount/common'
 
 export const getBanners = asyncWrapper(async (req: Request, res: Response) => {
     const banners = await Banner.find()
@@ -53,7 +53,7 @@ export const updateBannerById = asyncWrapper(
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
         if (file) {
-            await messageBroker('AMQP_URL', banner.imageUrl, 'deleteImage')
+            await sendMessage('AMQP_URL', banner.imageUrl, 'deleteImage')
             const imageUrl = generateImageUrl('API_GATEWAY_URL', file.filename)
             if (title) bannerUpdateBody = { title, imageUrl }
             else bannerUpdateBody = { title: banner.title, imageUrl }
@@ -75,7 +75,7 @@ export const deleteBannerById = asyncWrapper(
                 .status(404)
                 .send({ errors: `Banner with id ${bannerId} not found` })
 
-        await messageBroker('AMQP_URL', banner.imageUrl, 'deleteImage')
+        await sendMessage('AMQP_URL', banner.imageUrl, 'deleteImage')
         await banner.delete()
 
         res.status(204).end()

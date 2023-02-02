@@ -24,7 +24,7 @@
         "typescript": "^4.7.4"
     },
     "dependencies": {
-        "@payhasly-discount/common": "^2.2.0",
+        "@payhasly-discount/common": "^2.3.5",
         "cors": "^2.8.5",
         "express": "^4.18.1",
         "mongoose": "^6.5.0"
